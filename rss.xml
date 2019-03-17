@@ -1,15 +1,57 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Dulldave]]></title><description><![CDATA[Personal blog of David Dyke]]></description><link>https://gatsby-starter-blog-demo.netlify.com/</link><generator>RSS for Node</generator><lastBuildDate>Sun, 17 Mar 2019 11:03:08 GMT</lastBuildDate><item><title><![CDATA[How I like to Structure and Build Go Services]]></title><description><![CDATA[I’ve worked with Go on and off for a little while now and have a handful of projects in production. I thought I’d use this as an opportunity…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//how-i-like-to-structure-and-build-go-services/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//how-i-like-to-structure-and-build-go-services/</guid><pubDate>Sat, 16 Mar 2019 20:00:00 GMT</pubDate><content:encoded>&lt;p&gt;I’ve worked with Go on and off for a little while now and have a handful of projects in production. I thought I’d use this as an opportunity to write down what I’ve found works quite well and what I’ve found is simple enough for any developer to pick up.&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Dulldave]]></title><description><![CDATA[Personal blog of David Dyke]]></description><link>https://gatsby-starter-blog-demo.netlify.com/</link><generator>RSS for Node</generator><lastBuildDate>Sun, 17 Mar 2019 18:27:04 GMT</lastBuildDate><item><title><![CDATA[AWS SQS Dead Letter Replay Lambda]]></title><description><![CDATA[I came across an incident recently where data was going to a service via SQS, upon hitting that service it would then talk to a bunch of…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//aws-sqs-dead-letter-replay-lambda/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//aws-sqs-dead-letter-replay-lambda/</guid><pubDate>Sun, 17 Mar 2019 10:00:00 GMT</pubDate><content:encoded>&lt;p&gt;I came across an incident recently where data was going to a service via SQS, upon hitting that service it would then talk to a bunch of other services to gather more data for the request. At the same time, an attack had taken down the connection to those other services which was causing our requests to fail and build upon a dead letter queue. Now, these requests weren’t broken per se, they were just victim to a one-off transient error. The data within the request was perfectly valid, however, the dead letter queue was used more for logging the very occasional permanent error that had occurred and being able to replay those items was never needed.&lt;/p&gt;
+&lt;p&gt;Because of that incident, I wanted to build something that could be turned on at a moments notice and be used to replay items in the dead letter queue, albeit temporarily.&lt;/p&gt;
+&lt;p&gt;Lambda seemed to be a good fit for this. We could specify a queue to trigger the Lambda against and a queue to replay those items too. Which would mean if we got notified via our CloudWatch alarms that the DLQ was filling up we could diagnose the issue and at the right time consume those items in the DLQ.&lt;/p&gt;
+&lt;p&gt;The other benefit of using a Lambda is that we can have all of the code sitting, with the triggers disabled, and only when we need to enable them to start the process.&lt;/p&gt;
+&lt;p&gt;
+  &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/b9666b3d1b2fa9bb1d10b8c19597c991/fa8c3/enabled-trigger.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+  
+  &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block;  max-width: 590px; margin-left: auto; margin-right: auto;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 12.649006622516556%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAADCAYAAACTWi8uAAAACXBIWXMAABYlAAAWJQFJUiTwAAAASklEQVQI153MOw7AIAwDUO5/WJZC/olLW4mdDs+SB7uFG1R1kx+enZm9Wh+8S0Sgqo6sgEaiX4Q5J9ogBouA+DvOzGOxDtV87R033gTsG0/IePoAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+    &gt;
+      &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;AWS Lambda console showing an enabled trigger&quot;
+        title=&quot;&quot;
+        src=&quot;/static/b9666b3d1b2fa9bb1d10b8c19597c991/6255c/enabled-trigger.png&quot;
+        srcset=&quot;/static/b9666b3d1b2fa9bb1d10b8c19597c991/375dc/enabled-trigger.png 148w,
+/static/b9666b3d1b2fa9bb1d10b8c19597c991/6b157/enabled-trigger.png 295w,
+/static/b9666b3d1b2fa9bb1d10b8c19597c991/6255c/enabled-trigger.png 590w,
+/static/b9666b3d1b2fa9bb1d10b8c19597c991/dcf9c/enabled-trigger.png 885w,
+/static/b9666b3d1b2fa9bb1d10b8c19597c991/43c8a/enabled-trigger.png 1180w,
+/static/b9666b3d1b2fa9bb1d10b8c19597c991/dc8c4/enabled-trigger.png 1770w,
+/static/b9666b3d1b2fa9bb1d10b8c19597c991/fa8c3/enabled-trigger.png 3020w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+    &lt;/span&gt;
+  &lt;/span&gt;
+  
+  &lt;/a&gt;
+    &lt;/p&gt;
+&lt;p&gt;The code itself is very simple. When the Lambda is triggered via SQS, it loops over the records that come in and simply forwards that message onto the output queue defined in the environment variables for the Lambda. Which then means the services listening to the output queue can start reprocessing the messages that had failed. 🎉🎉🎉&lt;/p&gt;
+&lt;p&gt;The full source code can be found here: &lt;a href=&quot;https://github.com/dulldave/aws-sqs-dead-letter-replay-lambda&quot;&gt;dulldave/aws-sqs-dead-letter-replay-lambda&lt;/a&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[How I like to Structure and Build Go Services]]></title><description><![CDATA[I’ve worked with Go on and off for a little while now and have a handful of projects in production. I thought I’d use this as an opportunity…]]></description><link>https://gatsby-starter-blog-demo.netlify.com//how-i-like-to-structure-and-build-go-services/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com//how-i-like-to-structure-and-build-go-services/</guid><pubDate>Sat, 16 Mar 2019 20:00:00 GMT</pubDate><content:encoded>&lt;p&gt;I’ve worked with Go on and off for a little while now and have a handful of projects in production. I thought I’d use this as an opportunity to write down what I’ve found works quite well and what I’ve found is simple enough for any developer to pick up.&lt;/p&gt;
 &lt;p&gt;My projects tend to follow the &lt;a href=&quot;https://github.com/golang-standards/project-layout&quot;&gt;Standard Go Project Layout&lt;/a&gt;. But with a few modifications, like removing the extra nested directories under the &lt;code class=&quot;language-text&quot;&gt;internal/&lt;/code&gt; directory (&lt;code class=&quot;language-text&quot;&gt;internal/app/&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;internal/pkg/&lt;/code&gt;). I find that just putting my packages under &lt;code class=&quot;language-text&quot;&gt;internal/&lt;/code&gt; works fine. But other than that my projects follow the standard layout pretty close.&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;app/
 └── internal/
     ├── someservice/
     └── auth/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;All packages under internal are grouped by commonality. I prefer keeping code that’s related close together and I’m not a huge fan of splitting code by it’s function e.g. all handlers under a handlers package. So, for example, if my service requires a user to login or register, I will group that functionality under an auth package.&lt;/p&gt;
+&lt;p&gt;All packages under internal are grouped by commonality. I prefer keeping code that’s related close together and I’m not a huge fan of splitting code by its function e.g. all handlers under a handlers package. So, for example, if my service requires a user to login or register, I will group that functionality under an auth package.&lt;/p&gt;
 &lt;p&gt;Within each package under &lt;code class=&quot;language-text&quot;&gt;internal/&lt;/code&gt; I usually have 3 main files:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;handlers.go&lt;/strong&gt;, this contains all HTTP handlers needed for this package as well as handles anything specific to the request and response, any other file within this package doesn’t have knowledge of where the data comes from or goes to.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;store.go&lt;/strong&gt;, this is essentially a repository to access some sort of datastore. I use the store as a wrapper around a third party database provider like the standard libraries &lt;code class=&quot;language-text&quot;&gt;database/sql&lt;/code&gt; package. This makes it easy to mock out in any package that requires database access.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;service.go&lt;/strong&gt;, which contains most of the business logic for the package. For example, if we had an auth package, and part of that package was for registering a user, service.go would have a method that could validate that the user doesn’t already exist in the database through the provided store. It could then hash the inputted password using another injected service, then it could pass the final user details to another store method for adding a user, and finally it could trigger an email to notify that user.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;store.go&lt;/strong&gt;, this is essentially a repository to access some sort of datastore. I use the store as a wrapper around a third-party database provider like the standard libraries &lt;code class=&quot;language-text&quot;&gt;database/sql&lt;/code&gt; package. This makes it easy to mock out in any package that requires database access.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;service.go&lt;/strong&gt;, which contains most of the business logic for the package. For example, if we had an auth package, and part of that package was for registering a user, service.go would have a method that could validate that the user doesn’t already exist in the database through the provided store. It could then hash the inputted password using another injected service, then it could pass the final user details to another store method for adding a user, and finally, it could trigger an email to notify that user.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;app/
 └── internal/

@@ -15,13 +15,13 @@ app/
     └── auth/
 ```
 
-All packages under internal are grouped by commonality. I prefer keeping code that's related close together and I'm not a huge fan of splitting code by it's function e.g. all handlers under a handlers package. So, for example, if my service requires a user to login or register, I will group that functionality under an auth package.
+All packages under internal are grouped by commonality. I prefer keeping code that's related close together and I'm not a huge fan of splitting code by its function e.g. all handlers under a handlers package. So, for example, if my service requires a user to login or register, I will group that functionality under an auth package.
 
 Within each package under `internal/` I usually have 3 main files:
 
 - **handlers.go**, this contains all HTTP handlers needed for this package as well as handles anything specific to the request and response, any other file within this package doesn't have knowledge of where the data comes from or goes to.
-- **store.go**, this is essentially a repository to access some sort of datastore. I use the store as a wrapper around a third party database provider like the standard libraries `database/sql` package. This makes it easy to mock out in any package that requires database access.
-- **service.go**, which contains most of the business logic for the package. For example, if we had an auth package, and part of that package was for registering a user, service.go would have a method that could validate that the user doesn't already exist in the database through the provided store. It could then hash the inputted password using another injected service, then it could pass the final user details to another store method for adding a user, and finally it could trigger an email to notify that user.
+- **store.go**, this is essentially a repository to access some sort of datastore. I use the store as a wrapper around a third-party database provider like the standard libraries `database/sql` package. This makes it easy to mock out in any package that requires database access.
+- **service.go**, which contains most of the business logic for the package. For example, if we had an auth package, and part of that package was for registering a user, service.go would have a method that could validate that the user doesn't already exist in the database through the provided store. It could then hash the inputted password using another injected service, then it could pass the final user details to another store method for adding a user, and finally, it could trigger an email to notify that user.
 
 ```
 app/

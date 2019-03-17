@@ -23,7 +23,7 @@
     "gatsby-remark-responsive-iframe": "^2.0.10",
     "gatsby-remark-smartypants": "^2.0.9",
     "gatsby-source-filesystem": "^2.0.24",
-    "gatsby-transformer-remark": "^2.3.2",
+    "gatsby-transformer-remark": "^2.3.4",
     "gatsby-transformer-sharp": "^2.1.17",
     "prismjs": "^1.15.0",
     "react": "^16.8.4",
@@ -36,6 +36,7 @@
     "typography-theme-wordpress-2016": "^0.16.19"
   },
   "devDependencies": {
+    "gh-pages": "^2.0.1",
     "prettier": "^1.16.4"
   },
   "homepage": "https://github.com/gatsbyjs/gatsby-starter-blog#readme",
@@ -54,6 +55,7 @@
     "format": "prettier --write src/**/*.{js,jsx}",
     "start": "npm run develop",
     "serve": "gatsby serve",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
+    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\"",
+    "deploy": "gatsby build --prefix-paths && gh-pages -d public -b master"
   }
 }
